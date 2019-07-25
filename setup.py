@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="videotools",
-    version="0.0.9",
+    version="0.0.10",
     author="Alex Bondoux",
     author_email="alexandre.bdx@gmail.com",
     description="A collection of helper functions to process videos.",
