@@ -1,12 +1,13 @@
 Metadata-Version: 2.1
 Name: videotools
-Version: 0.0.3
+Version: 0.0.4
 Summary: A collection of helper functions to process videos.
 Home-page: https://github.com/AlexBdx/Heli/tree/master/videotools
 Author: Alex Bondoux
 Author-email: alexandre.bdx@gmail.com
 License: UNKNOWN
 Description: # Package description
+        A collection of helper functions to process videos.
         # Welcome to videotools!
         
 Platform: UNKNOWN
