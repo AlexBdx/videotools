@@ -41,42 +41,42 @@ def load_path_images(list_folders, method, verbose=False):# Load the path to the
     input_neg = []
     for folder in list_folders:
         PATH_FOLDER = folder
-    if verbose:
-        print("[INFO] Processing", PATH_FOLDER)
-    # Check if the model 
-    info = dict()
-    try:
-        with open(os.path.join(PATH_FOLDER, 'Info.txt')) as f:
-            data = csv.DictReader(f)
-            for line in data:
-                info = line  # Only one line expected
-    except FileNotFoundError:
-        print("[WARNING] Info.txt file not found in {}. Skipping folder."
-             .format(PATH_FOLDER))
-        continue
-
-    if len(HELICOPTER_MODELS):
-        if info['Model'] not in HELICOPTER_MODELS:
-            continue
-    elif len(HELICOPTER_REGISTRATION):
-        if info['Registration'] not in HELICOPTER_REGISTRATION:
+        if verbose:
+            print("[INFO] Processing", PATH_FOLDER)
+        # Check if the model 
+        info = dict()
+        try:
+            with open(os.path.join(PATH_FOLDER, 'Info.txt')) as f:
+                data = csv.DictReader(f)
+                for line in data:
+                    info = line  # Only one line expected
+        except FileNotFoundError:
+            print("[WARNING] Info.txt file not found in {}. Skipping folder."
+                 .format(PATH_FOLDER))
             continue
 
-    TIMESTAMP = os.path.split(PATH_FOLDER)[1]
-    PATH_SOURCE_BBOX = os.path.join(PATH_FOLDER, TIMESTAMP+"_sourceBB.pickle")
-    PATH_EXTRAPOLATED_BBOX = os.path.join(PATH_FOLDER, TIMESTAMP+"_extrapolatedBB.pickle")
-    PATH_CROP_FOLDER = os.path.join(PATH_FOLDER, TIMESTAMP+'_NN_crops')
-    #PATH_CROPS_NN_SIZE = os.path.join(PATH_CROP_FOLDER, 'nnSizeCrops')
-    #PATH_CROP_RESIZED_TO_NN = os.path.join(PATH_CROP_FOLDER, 'cropsResizedToNn')
-    PATH_CROPS = os.path.join(PATH_CROP_FOLDER, method)
+        if len(HELICOPTER_MODELS):
+            if info['Model'] not in HELICOPTER_MODELS:
+                continue
+        elif len(HELICOPTER_REGISTRATION):
+            if info['Registration'] not in HELICOPTER_REGISTRATION:
+                continue
 
-    PATH_NEGATIVES = os.path.join(PATH_CROP_FOLDER, 'Negatives')
-    PATH_EXTRACTED = os.path.join(PATH_CROP_FOLDER, 'Extracted_helicopters')
-    #PATH_AUGMENTED = os.path.join(PATH_CROP_FOLDER, 'Augmented_data')
+        TIMESTAMP = os.path.split(PATH_FOLDER)[1]
+        PATH_SOURCE_BBOX = os.path.join(PATH_FOLDER, TIMESTAMP+"_sourceBB.pickle")
+        PATH_EXTRAPOLATED_BBOX = os.path.join(PATH_FOLDER, TIMESTAMP+"_extrapolatedBB.pickle")
+        PATH_CROP_FOLDER = os.path.join(PATH_FOLDER, TIMESTAMP+'_NN_crops')
+        #PATH_CROPS_NN_SIZE = os.path.join(PATH_CROP_FOLDER, 'nnSizeCrops')
+        #PATH_CROP_RESIZED_TO_NN = os.path.join(PATH_CROP_FOLDER, 'cropsResizedToNn')
+        PATH_CROPS = os.path.join(PATH_CROP_FOLDER, method)
 
-    pos_path, neg_path = search_path_for_images(PATH_CROP_FOLDER, method=method)
-    input_pos += pos_path
-    input_neg += neg_path
+        PATH_NEGATIVES = os.path.join(PATH_CROP_FOLDER, 'Negatives')
+        PATH_EXTRACTED = os.path.join(PATH_CROP_FOLDER, 'Extracted_helicopters')
+        #PATH_AUGMENTED = os.path.join(PATH_CROP_FOLDER, 'Augmented_data')
+
+        pos_path, neg_path = search_path_for_images(PATH_CROP_FOLDER, method=method)
+        input_pos += pos_path
+        input_neg += neg_path
   
     print()
     print("[INFO] Method used:", method)
