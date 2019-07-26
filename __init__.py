@@ -1,16 +1,11 @@
-from os.path import dirname, basename, isfile, join
+from os.path import dirname, basename, isfile, join, abspath, split
 import glob
-modules = glob.glob("*.py")
-module_blacklist = ['__init__.py', 'setup.py']
-__name__ = "videotools_dev"
-__version__ = "0.0.10"
-__all__ = [ basename(f)[:-3] for f in modules if isfile(f) and f not in module_blacklist]
 
-"""[Removed for packaging]
-import init
-import extract
-import bbox
-import image_stabilizer
-import transfer_learning
-"""
+path_glob = join(dirname(abspath(__file__)), '*.py')
+modules = glob.glob(path_glob)
+#valid_modules = [mod for mod in modules if mod[-3:] == '.py']
+module_blacklist = ['__init__.py', 'setup.py']
+__name__ = "videotools"
+__version__ = "0.0.12"
+__all__ = [ basename(f)[:-3] for f in modules if isfile(f) and split(f)[1] not in module_blacklist]
 
