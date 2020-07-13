@@ -6,7 +6,7 @@ import subprocess as sp
 
 
 def clean_crop_directory(path_folder):
-    # path_folder is an absolute path str
+    # path_folder is an absolute path str 
     
     # Delete crop folder if it exists
     timestamp = os.path.split(path_folder)[1]
