@@ -300,54 +300,52 @@ def test_model_on_folder(model, root, method, extension='.png', verbose=False):
         plt.show()
         
     return accuracy
-    
-"""[TBR]
-def load_and_preprocess_image(path, label, dtype):
-    # Applies a few transformations to an image to normalize the data
-    # image: uint8 array
-    # Returns a dtype array of processed image
 
-    # Import image
-    image = plt.imread(path, format='uint8')  # Lightweight data load
 
-    image = preprocess_image(image, dtype)
-
-    #assert image.dtype==dtype  # Sanity check
-    return image.astype(dtype), label, scaler
-    
-def preprocess_image(image, dtype):
-    # Simple, direct normalization without anything else
-    assert image.dtype == np.uint8
-    mean = np.mean(image)
-    deviation = np.std(image)
-    image = (image - mean)/deviation
-    #scaler = [mean, deviation]
-
-    #assert image.dtype==dtype  # Sanity check
+def add_noise(image, intensity, noise_type='normal'):
+    # Take a float image (in the [-1, 1] interval) as the input
+    # Returns an image as a float
+    dtype = image.dtype
+    assert dtype==np.float16 or dtype==np.float32 or dtype==np.float64
+    if noise_type == 'normal':
+        noise = np.random.randn(224, 224, 3)  # This is N(0, 1)
+    elif noise_type == 'uniform':
+        noise = 2*np.random.rand(224, 224, 3) - 1  # Creates [-1, 1]
+    else:
+        print("[ERROR] This noise_type option does not exist")
+        raise
+    #print("[INFO] Average is ", np.mean(noise))
+    #print("[INFO] Std is ", np.std(noise))
+    image += intensity*noise  # Do not modify the image type
+    image = np.clip(image, -1, 1)
     return image.astype(dtype)
-"""
 
-def preprocess_image(path, label, dtype):
-    # Applies a few transformations to an image to normalize the data
-    # image: uint8 array
-    # Returns a dtype array of processed image
+def invert_preprocessing(image, scaler):
+    image = image*scaler[1] + scaler[0]
+    image = 127.5*(image+1)  # [-1; 1] -> [0; 255]
 
-    # Import image
-    image = plt.imread(path, format='uint8')  # Lightweight data load
+    return image.astype(np.uint8)
 
-    # Scale to [-1, 1]
-    image = image.astype(np.float64)/127.5 - 1  # Becomes a float64
+def preprocess_image(image, label, dtype, noise=0):
+  # Applies a few transformations to an image to normalize the data
+  # image: uint8 array
+  # Returns a dtype array of processed image
 
+  
+  # Scale to [-1, 1]
+  image = image.astype(np.float64)/127.5 - 1  # Becomes a float64
+  
+  if noise:  # Used for training, not testing
     # Add N(0, 1) noise
-    image = add_noise(image, 0.1)  # 0.01 is good for normal noise
-
-    # Normalize data to follow N(0, 1)
-    mean = np.mean(image)
-    deviation = np.std(image)
-    image = (image - mean)/deviation
-    scaler = [mean, deviation]
-
-    return image.astype(dtype), label, scaler
+    image = add_noise(image, noise)  # 0.01 is good for normal noise
+  
+  # Normalize data to follow N(0, 1)
+  mean = np.mean(image)
+  deviation = np.std(image)
+  image = (image - mean)/deviation
+  scaler = [mean, deviation]
+  
+  return image.astype(dtype), label, scaler
 
 
 def invert_preprocessing(image, scaler):

@@ -3,10 +3,11 @@ import os
 import cv2
 import numpy as np
 import subprocess as sp
+import collections
 
 
 def clean_crop_directory(path_folder):
-    # path_folder is an absolute path str
+    # path_folder is an absolute path str 
     
     # Delete crop folder if it exists
     timestamp = os.path.split(path_folder)[1]
@@ -81,15 +82,40 @@ def intersection_over_union(box_a, box_b):
     return iou
 
 
-def centered_bbox(bbox):
+def bbox_center(bbox):
     """
-    Returns a centered bbox
-    :param bbox: original bounding box
-    :return: x, y are replaced by xc, yc
+    Returns the center of a bbox
+    :param bbox: original bounding box in (x, y, w, h) format
+    :return result: replaced by same type object full of (xc, yc)
     """
-    (x, y, w, h) = bbox
-    (xc, yc) = (x + w // 2, y + h // 2)
-    return xc, yc, w, h
+    if type(bbox)==list:
+        result = []
+        data = np.array(bbox, dtype=np.float64)
+        data[:, 0] += data[:, 2]/2  # Get xc
+        data[:, 1] += data[:, 3]/2  # Get yc
+        centers = data[:, :2]  # Isolate (xc, yc)
+        for entry in centers:
+            result.append((entry[0], entry[1]))
+        assert type(result)==list
+    
+    elif type(bbox)==collections.deque:
+        result = collections.deque(maxlen=bbox.maxlen)
+        data = np.array(bbox, dtype=np.float64)
+        data[:, 0] += data[:, 2]/2  # Get xc
+        data[:, 1] += data[:, 3]/2  # Get yc
+        centers = data[:, :2]  # Isolate (xc, yc)
+        for entry in centers:
+            result.append((entry[0], entry[1]))
+        assert type(result)==collections.deque
+    
+    elif type(bbox)==tuple:
+        (x, y, w, h) = bbox
+        result = (x + w // 2, y + h // 2)
+        assert type(result)==tuple
+    else:
+        raise TypeError('Supports only lists of tuples and single tuple.')
+    
+    return result
 
 
 def nn_size_crop(frame, bbox, crop_size):
